@@ -1,5 +1,6 @@
 {
   "appId": "com.fantaye.app",
   "appName": "Fantaye",
-  "webDir": "www"
+  "webDir": "www",
+  "backgroundColor": "#090911"
 }
