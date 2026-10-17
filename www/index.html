@@ -34,6 +34,7 @@ textarea{border-radius:18px}select{width:auto;max-width:48%}#q{flex:1}
 .heart{position:absolute;top:8px;right:8px;background:#0006;color:#fff;border:0;border-radius:99px;width:32px;height:32px;font-size:18px;line-height:1;cursor:pointer}
 .pic img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}.thumbs{display:flex;gap:8px;flex-wrap:wrap}.th{position:relative;width:68px;height:68px;border-radius:14px;overflow:hidden;border:1px solid var(--line)}.th img{width:100%;height:100%;object-fit:cover}.th button{position:absolute;top:2px;right:2px;background:#000a;color:#fff;border:0;border-radius:99px;width:20px;height:20px;cursor:pointer;line-height:1}.add{width:68px;height:68px;border-radius:14px;border:1.5px dashed var(--mu);display:grid;place-items:center;font-size:26px;color:var(--mu);cursor:pointer}.gal{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory}.gal img{flex:none;width:100%;max-height:260px;object-fit:cover;border-radius:16px;scroll-snap-align:center}
 .msgs{display:flex;flex-direction:column;gap:8px;margin:12px 0;max-height:50vh;overflow-y:auto}.bub{align-self:flex-end;background:var(--g);color:#fff;padding:9px 14px;border-radius:18px 18px 4px 18px;max-width:80%;word-break:break-word}.snd{display:flex;gap:8px}
+.bub.o{align-self:flex-start;background:var(--sel);color:var(--tx);border:1px solid var(--line);border-radius:18px 18px 18px 4px}
 .pcard{display:flex;gap:12px;align-items:center;padding:12px;border-radius:20px;border:1px solid var(--line);margin:12px 0;background:var(--card)}.av{width:52px;height:52px;border-radius:18px;background:var(--g);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:800;flex:none}
 .info{padding:10px 12px;font-size:14px}.pr{color:#22d3ee;font-weight:800;font-size:16px}.mu{color:var(--mu);font-size:13px}
 .empty{text-align:center;color:var(--mu);padding:50px 20px}.empty b{display:block;font-size:56px}
@@ -63,8 +64,7 @@ dialog{background:var(--sel);color:var(--tx);border:1px solid var(--line);border
 <dialog id="dlg"></dialog>
 <div id="toast"></div>
 
-<script>
-const K="home saved sell msgs profile look what world detect none title cat desc loc name phone post savedE msgE google fb email near any ok price call all c0 c1 c2 c3 c4 c5 c6 c7 c8 c9".split(" ");
+<script>const K="home saved sell msgs profile look what world detect none title cat desc loc name phone post savedE msgE google fb email near any ok price call all c0 c1 c2 c3 c4 c5 c6 c7 c8 c9".split(" ");
 const D={
 en:"Home|Saved|Sell|Messages|Profile|I am looking for…|What are you looking for?|Worldwide|Detect my location|Nothing found nearby|Title|Category|Description|Location|Name|Phone number|Post ad|Ads you don't want to lose appear here|Your chats with other users appear here|Continue with Google|Continue with Facebook|Log in with email or phone|Near me|Anywhere|Ad posted!|Price|Call seller|All|Vehicles|Property|Phones & Tablets|Electronics|Home & Furniture|Fashion|Beauty|Services|Jobs|Other",
 am:"መነሻ|የተቀመጡ|ሽጥ|መልዕክቶች|መገለጫ|የሚፈልጉት…|ምን እየፈለጉ ነው?|መላው ዓለም|አካባቢዬን እወቅ|በአቅራቢያ ምንም አልተገኘም|ርዕስ|ምድብ|መግለጫ|አካባቢ|ስም|ስልክ ቁጥር|ማስታወቂያ ለጥፍ|እንዳይጠፉ የሚፈልጓቸው ማስታወቂያዎች እዚህ ይታያሉ|ከሌሎች ተጠቃሚዎች ጋር ያሉ ውይይቶች እዚህ ይታያሉ|በGoogle ቀጥል|በFacebook ቀጥል|በኢሜይል ወይም ስልክ ግባ|በአቅራቢያዬ|ሁሉም ቦታ|ማስታወቂያ ተለጥፏል!|ዋጋ|ሻጩን ይደውሉ|ሁሉም|ተሽከርካሪዎች|ንብረት|ስልኮች እና ታብሌቶች|ኤሌክትሮኒክስ|ቤት እና እቃዎች|ፋሽን|ውበት|አገልግሎቶች|ሥራ|ሌላ",
@@ -74,29 +74,76 @@ fr:"Accueil|Enregistrés|Vendre|Messages|Profil|Je cherche…|Que cherchez-vous 
 zh:"首页|已保存|出售|消息|我的|我想找…|你在找什么？|全球|获取我的位置|附近没有结果|标题|分类|描述|位置|姓名|电话号码|发布广告|你想保留的广告会显示在这里|你的聊天会显示在这里|使用 Google 继续|使用 Facebook 继续|使用邮箱或手机登录|我附近|任何地方|广告已发布！|价格|联系卖家|全部|车辆|房产|手机和平板|电子产品|家居家具|时尚|美妆|服务|招聘|其他"};
 const ICO=["🚗","🏠","📱","💻","🛋️","👗","💄","🛠️","💼","📦"];
 const CO=[["ET","Ethiopia","🇪🇹","Addis Ababa",9.03,38.74],["KE","Kenya","🇰🇪","Nairobi",-1.29,36.82],["EG","Egypt","🇪🇬","Cairo",30.04,31.24],["NG","Nigeria","🇳🇬","Lagos",6.52,3.38],["AE","UAE","🇦🇪","Dubai",25.2,55.27],["SA","Saudi Arabia","🇸🇦","Riyadh",24.71,46.68],["GB","United Kingdom","🇬🇧","London",51.51,-0.13],["US","USA","🇺🇸","Washington DC",38.91,-77.04],["DE","Germany","🇩🇪","Berlin",52.52,13.4],["FR","France","🇫🇷","Paris",48.86,2.35],["ES","Spain","🇪🇸","Madrid",40.42,-3.7],["CN","China","🇨🇳","Beijing",39.9,116.4]];
-const SAMPLE=[
-{id:1,t:"Samsung Galaxy S20+ 128GB",p:"ETB 22,500",c:2,city:"Kolfe, Addis Ababa",co:"ET",lat:9.0,lng:38.7,d:"Brand new"},
-{id:2,t:"Tecno Camon 20 256GB",p:"ETB 16,550",c:2,city:"Bole, Addis Ababa",co:"ET",lat:9.01,lng:38.78,d:"Used"},
-{id:3,t:"Toyota Corolla 2015",p:"ETB 2,900,000",c:0,city:"CMC, Addis Ababa",co:"ET",lat:9.02,lng:38.8,d:"Automatic"},
-{id:4,t:"Sofa set",p:"ETB 35,000",c:4,city:"Adama",co:"ET",lat:8.54,lng:39.27,d:"Like new"},
-{id:5,t:"Toyota Prado",p:"KES 4,200,000",c:0,city:"Nairobi",co:"KE",lat:-1.29,lng:36.82,d:"2018"},
-{id:6,t:"2-bedroom apartment",p:"AED 6,500/mo",c:1,city:"Dubai Marina",co:"AE",lat:25.08,lng:55.14,d:"Furnished"},
-{id:7,t:"Dell XPS laptop",p:"£650",c:3,city:"London",co:"GB",lat:51.51,lng:-0.13,d:"Used"},
-{id:8,t:"Graphic design service",p:"€40/h",c:7,city:"Berlin",co:"DE",lat:52.52,lng:13.4,d:"Freelance"}];
+const M={en:["Message seller","Send","Type a message…","Back","Demo: messages are saved on this device only until the server is connected"],am:["ለሻጩ መልዕክት ላክ","ላክ","መልዕክት ቻፍ…","ተመለስ","ሙከራ፡ ሰርበሩ እስከመገናኝ መልዕክቶች በዚህ መባቢያ ላይ ብታ ይቀመጣሉ"],ar:["راسل البائع","إرسال","اكتب رسالة…","رجوع","تجريبي: الرسائل تُحفظ على هذا الجهاز فقط حتى يتم ربط الخادم"],es:["Enviar mensaje","Enviar","Escribe un mensaje…","Atrás","Demo: los mensajes se guardan solo en este dispositivo hasta conectar el servidor"],fr:["Message au vendeur","Envoyer","Écrire un message…","Retour","Démo : messages enregistrés uniquement sur cet appareil jusqu'à la connexion du serveur"],zh:["给卖家留言","发送","输入消息…","返回","演示：服务器连接前，消息仅保存在此设备"]};
+const MK="msgBtn send typeMsg back demo".split(" ");
+const N={en:["ads","Member since"],am:["ማስታወቂያዎች","አባል የሆኑት"],ar:["إعلانات","عضو منذ"],es:["anuncios","Miembro desde"],fr:["annonces","Membre depuis"],zh:["条广告","加入时间"]};
+
+const SB="https://uxpszcmczicjtcnnfsho.supabase.co",KEY="sb_publishable_9bEQ_C8OcSVpk-bAfCy0uA_nCuvqMqK";
 const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const ld=(k,d)=>{try{const s=localStorage.getItem(k);return s?JSON.parse(s):d}catch(e){return d}},sv=(k,x)=>{try{localStorage.setItem(k,JSON.stringify(x));return 1}catch(e){return 0}};
 const km=(a,b)=>{const r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lng-a.lng)*r,h=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)**2;return 12742*Math.asin(Math.sqrt(h))};
 const near=m=>CO.map(c=>[c,km(m,{lat:c[4],lng:c[5]})]).sort((a,b)=>a[1]-b[1])[0];
-let lang=ld("fy2_lang","am"),country="",cat=-1,rad=50,me=null,denied=0,v="home",saved=ld("fy2_saved",[]),user=ld("fy2_user",null),items=ld("fy2_items",SAMPLE),t={};
-const M={en:["Message seller","Send","Type a message…","Back","Demo: messages are saved on this device only until the server is connected"],am:["ለሻጩ መልዕክት ላክ","ላክ","መልዕክት ቻፍ…","ተመለስ","ሙከራ፡ ሰርበሩ እስከመገናኝ መልዕክቶች በዚህ መባቢያ ላይ ብታ ይቀመጣሉ"],ar:["راسل البائع","إرسال","اكتب رسالة…","رجوع","تجريبي: الرسائل تُحفظ على هذا الجهاز فقط حتى يتم ربط الخادم"],es:["Enviar mensaje","Enviar","Escribe un mensaje…","Atrás","Demo: los mensajes se guardan solo en este dispositivo hasta conectar el servidor"],fr:["Message au vendeur","Envoyer","Écrire un message…","Retour","Démo : messages enregistrés uniquement sur cet appareil jusqu'à la connexion du serveur"],zh:["给卖家留言","发送","输入消息…","返回","演示：服务器连接前，消息仅保存在此设备"]};
-const MK="msgBtn send typeMsg back demo".split(" ");
-const N={en:["ads","Member since"],am:["ማስታወቂያዎች","አባል የሆኑት"],ar:["إعلانات","عضو منذ"],es:["anuncios","Miembro desde"],fr:["annonces","Membre depuis"],zh:["条广告","加入时间"]};
-let pend=[],chat=null,chats=ld("fy2_chats",{});
-function toast(s){const e=$("toast");e.textContent=s;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",2600)}
-function card(x){return `<article class="item" data-id="${x.id}"><div class="pic">${x.imgs&&x.imgs[0]?`<img src="${x.imgs[0]}" alt="">`:ICO[x.c]}<button class="heart" data-h="${x.id}">${saved.includes(x.id)?'<span style="color:#ec4899">♥</span>':"♡"}</button><span class="badge">${esc(x.p)}</span></div><div class="info"><b>${esc(x.t)}</b><div class="mu">📍 ${esc(x.city)}${x.dist!=null?" · "+x.dist+" km":""}</div></div></article>`}
+let lang=ld("fy3_lang","am"),country="",cat=-1,rad=50,me=null,denied=0,v="home",saved=ld("fy2_saved",[]),user=ld("fy3_user",null),sess=ld("fy3_sess",null),items=[],cache={},msgs=[],chat=null,pstat={},t={},pend=[],loading=0,err="";
+function toast(s){const e=$("toast");e.textContent=s;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",3200)}
+async function api(path,o={}){
+  let {method="GET",body,raw,headers={},auth=true}=o;
+  if(auth&&sess&&sess.exp<Date.now()/1000+60)await refresh();
+  const h={apikey:KEY,...headers};
+  if(auth&&sess)h.Authorization="Bearer "+sess.at;
+  if(body&&!raw){h["Content-Type"]="application/json";body=JSON.stringify(body)}
+  const r=await fetch(SB+path,{method,headers:h,body});
+  const tx=await r.text();
+  if(!r.ok)throw new Error(r.status+" "+tx.slice(0,140));
+  return tx?JSON.parse(tx):null}
+function setSess(d){sess={at:d.access_token,rt:d.refresh_token,exp:d.expires_at||Math.floor(Date.now()/1000)+(d.expires_in||3600),uid:d.user.id};sv("fy3_sess",sess)}
+async function refresh(){try{setSess(await api("/auth/v1/token?grant_type=refresh_token",{method:"POST",body:{refresh_token:sess.rt},auth:false}))}catch(e){sess=null;sv("fy3_sess",null);await signIn()}}
+async function signIn(){
+  setSess(await api("/auth/v1/signup",{method:"POST",body:{data:{}},auth:false}));
+  user={name:"Guest "+Math.random().toString(36).slice(2,6).toUpperCase(),phone:"",auto:1};sv("fy3_user",user);
+  try{await api("/rest/v1/profiles",{method:"POST",body:{id:sess.uid,name:user.name},headers:{Prefer:"resolution=merge-duplicates,return=minimal"}})}catch(e){}}
+const fromDb=r=>({id:r.id,uid:r.user_id,t:r.title,desc:r.description,p:r.price||"—",c:r.category||0,city:r.city||"",co:r.country,lat:r.lat,lng:r.lng,seller:r.seller_name,ph:r.phone,imgs:r.images||[]});
+const wd=x=>({...x,dist:me&&x.lat!=null?Math.round(km(me,x)):null});
+async function load(){
+  loading=1;err="";render();
+  try{let q="/rest/v1/listings?select=*&order=created_at.desc&limit=200";
+    if(country)q+="&country=eq."+country;
+    else if(me&&rad){const d=rad/111,dl=rad/(111*Math.max(.2,Math.cos(me.lat*Math.PI/180)));q+=`&lat=gte.${me.lat-d}&lat=lte.${me.lat+d}&lng=gte.${me.lng-dl}&lng=lte.${me.lng+dl}`}
+    items=(await api(q,{auth:false})).map(fromDb);items.forEach(x=>cache[x.id]=x)}catch(e){err=e.message}
+  loading=0;render()}
+async function fetchMissing(ids){const m=[...new Set(ids)].filter(i=>!cache[i]);if(!m.length)return;(await api("/rest/v1/listings?select=*&id=in.("+m.join(",")+")",{auth:false})).map(fromDb).forEach(x=>cache[x.id]=x)}
+async function loadSaved(){try{await fetchMissing(saved)}catch(e){err=e.message}if(v==="saved")render()}
+const mine=m=>m.sender===(sess&&sess.uid);
+const thread=()=>msgs.filter(m=>m.listing_id===chat.lid&&(m.sender===chat.o||m.receiver===chat.o));
+const bubbles=()=>thread().map(m=>`<div class="bub ${mine(m)?"":"o"}">${esc(m.body)}</div>`).join("");
+async function loadMsgs(){
+  if(!sess)return;
+  try{msgs=await api(`/rest/v1/messages?select=*&or=(sender.eq.${sess.uid},receiver.eq.${sess.uid})&order=id.asc&limit=500`);await fetchMissing(msgs.map(m=>m.listing_id))}catch(e){err=e.message;return}
+  if(v!=="msgs")return;
+  if(chat){const e=document.querySelector(".msgs");if(e){e.innerHTML=bubbles();e.scrollTop=e.scrollHeight}}else render()}
+async function loadStat(uid){
+  if(pstat[uid]!==undefined)return;pstat[uid]=null;
+  try{const[L,P]=await Promise.all([api("/rest/v1/listings?select=id,created_at&user_id=eq."+uid,{auth:false}),api("/rest/v1/profiles?select=name&id=eq."+uid,{auth:false})]);
+    pstat[uid]={n:L.length,since:L.length?L.map(a=>a.created_at).sort()[0]:null,name:P[0]&&P[0].name}}catch(e){}
+  if(chat&&chat.o===uid&&$("pc"))$("pc").innerHTML=pcard()}
+function pcard(){
+  const o=chat.o,x=cache[chat.lid]||{},s=pstat[o]||{},isS=o===x.uid,nm=s.name||(isS?x.seller:"")||"?",fl=(CO.find(c=>c[0]===x.co)||[0,0,""])[2],d=s.since?new Date(s.since).toLocaleDateString():"";
+  return `<div class="av">${esc(nm[0].toUpperCase())}</div><div><b>${esc(nm)}</b>${isS?`<div class="mu">📍 ${esc(x.city)} ${fl}</div>`:""}<div class="mu">📦 ${s.n??"…"} ${t.ads}${d?" · "+t.since+" "+d:""}</div>${isS&&x.ph?`<div class="pr">📞 ${esc(x.ph)}</div>`:""}</div>`}
+function msgsView(){
+  if(chat){const x=cache[chat.lid];
+    return `<div class="form"><button class="chip" data-back="1" style="color:var(--tx)">← ${t.back}</button><div class="pcard" id="pc">${pcard()}</div><h3>${x?ICO[x.c]+" "+esc(x.t):""}</h3><div class="msgs">${bubbles()}</div><div class="snd"><input id="cI" placeholder="${t.typeMsg}"><button class="btn" id="cS" style="width:auto;margin:0;padding:12px 18px">${t.send}</button></div></div>`}
+  const g={};msgs.forEach(m=>{const o=mine(m)?m.receiver:m.sender;g[m.listing_id+"|"+o]={lid:m.listing_id,o,last:m}});
+  const L=Object.entries(g).sort((a,b)=>b[1].last.id-a[1].last.id);
+  return L.length?`<div class="form">${L.map(([k,c])=>{const x=cache[c.lid];return `<div class="item" data-conv="${k}" style="margin-bottom:10px;padding:12px"><b>${x?ICO[x.c]+" "+esc(x.t):"…"}</b><div class="mu">${esc(c.last.body)}</div></div>`}).join("")}</div>`:`<div class="empty"><b>💬</b>${err?"⚠ "+esc(err):t.msgE}</div>`}
+async function sendMsg(){
+  const i=$("cI"),s=i&&i.value.trim();if(!s||!chat)return;i.value="";
+  try{if(!sess)await signIn();await api("/rest/v1/messages",{method:"POST",body:{listing_id:chat.lid,receiver:chat.o,body:s},headers:{Prefer:"return=minimal"}});await loadMsgs()}catch(e){toast("⚠ "+e.message)}}
+function openChat(id){
+  $("dlg").close();const x=cache[id];if(!x||!x.uid)return;
+  v="msgs";chat=sess&&x.uid===sess.uid?null:{lid:id,o:x.uid};render();loadMsgs()}
+function card(x){return `<article class="item" data-id="${x.id}"><div class="pic">${x.imgs&&x.imgs[0]?`<img src="${esc(x.imgs[0])}" alt="">`:ICO[x.c]}<button class="heart" data-h="${x.id}">${saved.includes(x.id)?'<span style="color:#ec4899">♥</span>':"♡"}</button><span class="badge">${esc(x.p)}</span></div><div class="info"><b>${esc(x.t)}</b><div class="mu">📍 ${esc(x.city)}${x.dist!=null?" · "+x.dist+" km":""} · ${t["c"+x.c]}</div></div></article>`}
 const empty=(i,s)=>`<div class="empty"><b>${i}</b>${s}</div>`;
 function filtered(){const q=$("q").value.toLowerCase();
-  return items.map(x=>({...x,dist:me&&x.lat!=null?Math.round(km(me,x)):null})).filter(x=>(!country||x.co===country)&&(cat<0||x.c===cat)&&(x.t+x.city).toLowerCase().includes(q)&&(!rad||!me||(x.dist!=null&&x.dist<=rad))).sort((a,b)=>(a.dist??1e9)-(b.dist??1e9))}
+  return items.map(wd).filter(x=>(cat<0||x.c===cat)&&(x.t+x.city).toLowerCase().includes(q)&&(!rad||!me||x.dist==null||x.dist<=rad)).sort((a,b)=>(a.dist??1e9)-(b.dist??1e9))}
 function render(){
   t=Object.fromEntries(K.map((k,i)=>[k,(D[lang]||D.en).split("|")[i]]));Object.assign(t,Object.fromEntries(MK.map((k,i)=>[k,(M[lang]||M.en)[i]])));t.ads=(N[lang]||N.en)[0];t.since=(N[lang]||N.en)[1];
   document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
@@ -108,56 +155,61 @@ function render(){
   $("nav").innerHTML=["home|🏠","saved|🔖","sell|✦","msgs|💬","profile|👤"].map(s=>{const[k,i]=s.split("|");return `<button data-v="${k}" class="${v===k?"on":""}"><span>${i}</span>${t[k]}</button>`}).join("");
   let h="";
   if(v==="home"){const L=filtered();
-    h=`<div class="cats">${[-1,...ICO.keys()].map(i=>`<button class="cat ${cat===i?"on":""}" data-c="${i}">${i<0?"✦":ICO[i]} ${i<0?t.all:t["c"+i]}</button>`).join("")}</div>`+(L.length?`<div class="grid">${L.map(card).join("")}</div>`:empty("📍",t.none))}
-  else if(v==="saved"){const L=items.filter(x=>saved.includes(x.id));h=L.length?`<div class="grid" style="padding-top:14px">${L.map(card).join("")}</div>`:empty("🗂️",t.savedE)}
+    h=`<div class="cats">${[-1,...ICO.keys()].map(i=>`<button class="cat ${cat===i?"on":""}" data-c="${i}">${i<0?"✦":ICO[i]} ${i<0?t.all:t["c"+i]}</button>`).join("")}</div>`+(loading?empty("⏳","…"):L.length?`<div class="grid">${L.map(card).join("")}</div>`:empty("📍",err?"⚠ "+esc(err):t.none))}
+  else if(v==="saved"){const L=saved.map(i=>cache[i]).filter(Boolean).map(wd);h=L.length?`<div class="grid" style="padding-top:14px">${L.map(card).join("")}</div>`:empty("🗂️",t.savedE)}
   else if(v==="msgs")h=msgsView();
   else if(v==="sell")h=`<div class="form"><label id="phL"></label><div class="thumbs" id="th"></div><input id="fI" type="file" accept="image/*" multiple hidden><label>${t.title}*</label><input id="fT"><label>${t.cat}*</label><select id="fC" style="max-width:100%;width:100%">${ICO.map((_,i)=>`<option value="${i}">${t["c"+i]}</option>`).join("")}</select><label>${t.desc}*</label><textarea id="fD" rows="3"></textarea><label>${t.price}</label><input id="fP" placeholder="ETB / USD / EUR…"><label>${t.loc}*</label><input id="fL" value="${esc(me&&me.label||"")}"><label>${t.name}*</label><input id="fN" value="${esc(user&&user.name||"")}"><label>${t.phone}*</label><input id="fH" inputmode="tel" value="${esc(user&&user.phone||"")}"><button class="btn" id="post">${t.post}</button></div>`;
-  else h=user&&!user.auto?`<div class="sheet"><h3>👤 ${esc(user.name)}</h3><p class="mu">${esc(user.phone)}</p><p class="mu">📦 ${items.filter(i=>i.ph&&i.ph===user.phone).length} ${t.ads}</p><button class="btn alt" id="out">✕</button></div>`:`<div class="sheet">${user?`<p class="mu">👤 ${esc(user.name)} · ${esc(user.country||"")}</p>`:""}<button class="btn alt" data-oauth="Google">${t.google}</button><button class="btn" style="background:#1877f2" data-oauth="Facebook">${t.fb}</button><div id="lf"><label class="mu">${t.name}</label><input id="uN"><label class="mu">${t.phone}</label><input id="uH" inputmode="tel"><button class="btn" id="login">${t.email}</button></div></div>`;
-  $("app").innerHTML=h;if(v==="sell")drawTh();
-}
-function setMe(m){const[c,d]=near(m);me={lat:m.lat,lng:m.lng,label:m.label||null};denied=0;if(m.auto&&d<800)country=c[0];if(m.auto&&!user){user={name:"Guest "+Math.random().toString(36).slice(2,6).toUpperCase(),phone:"",auto:1,country:c[0],at:Date.now()};sv("fy2_user",user);toast("👤 "+user.name+" "+c[2])}sv("fy2_me",me);render()}
-function gps(){if(!navigator.geolocation)return toast(t.detect+" ✕");navigator.geolocation.getCurrentPosition(p=>setMe({lat:p.coords.latitude,lng:p.coords.longitude,auto:true}),()=>{denied=1;if(!me)toast(t.world+" 🌍");render()},{timeout:8000,maximumAge:600000})}
-$("lang").onchange=e=>{lang=e.target.value;sv("fy2_lang",lang);render()};
+  else h=user&&!user.auto?`<div class="sheet"><h3>👤 ${esc(user.name)}</h3><p class="mu">${esc(user.phone)}</p><p class="mu">📦 ${items.filter(i=>sess&&i.uid===sess.uid).length} ${t.ads}</p><button class="btn alt" id="out">✕</button></div>`:`<div class="sheet">${user?`<p class="mu">👤 ${esc(user.name)}</p>`:""}<button class="btn alt" data-oauth="Google">${t.google}</button><button class="btn" style="background:#1877f2" data-oauth="Facebook">${t.fb}</button><div id="lf"><label class="mu">${t.name}</label><input id="uN"><label class="mu">${t.phone}</label><input id="uH" inputmode="tel"><button class="btn" id="login">${t.email}</button></div></div>`;
+  $("app").innerHTML=h;
+  if(v==="sell")drawTh();
+  if(v==="msgs"&&chat)loadStat(chat.o)}
+function setMe(m){const[c,d]=near(m);me={lat:m.lat,lng:m.lng,label:m.label||null};denied=0;if(m.auto&&d<800)country=c[0];load()}
+function gps(){if(!navigator.geolocation){denied=1;return render()}navigator.geolocation.getCurrentPosition(p=>setMe({lat:p.coords.latitude,lng:p.coords.longitude,auto:true}),()=>{denied=1;if(!me)toast(t.world+" 🌍");render()},{timeout:8000,maximumAge:600000})}
+async function login(){
+  const n=$("uN").value.trim(),p=$("uH").value.trim();if(!n||!p)return;
+  try{if(!sess)await signIn();user={name:n,phone:p};sv("fy3_user",user);await api("/rest/v1/profiles?id=eq."+sess.uid,{method:"PATCH",body:{name:n,phone:p},headers:{Prefer:"return=minimal"}})}catch(e){toast("⚠ "+e.message)}
+  render()}
+async function post(){
+  const T=$("fT").value.trim(),D2=$("fD").value.trim(),L=$("fL").value.trim(),N2=$("fN").value.trim(),H=$("fH").value.trim();
+  if(!T||!D2||!L||!N2||!H)return toast("* "+t.title+", "+t.desc+", "+t.loc+", "+t.name+", "+t.phone);
+  if(!me){gps();return toast("📍 "+t.detect)}
+  const P=$("fP").value.trim(),C=+$("fC").value;toast("⏳ …");
+  try{if(!sess)await signIn();
+    const urls=[];for(let i=0;i<pend.length;i++){const b=await(await fetch(pend[i])).blob(),p=`${sess.uid}/${Date.now()}-${i}.jpg`;await api("/storage/v1/object/ads/"+p,{method:"POST",body:b,raw:true,headers:{"Content-Type":"image/jpeg","x-upsert":"true"}});urls.push(SB+"/storage/v1/object/public/ads/"+p)}
+    await api("/rest/v1/listings",{method:"POST",body:{title:T,description:D2,price:P,category:C,city:L,country:near(me)[0][0],lat:me.lat,lng:me.lng,seller_name:N2,phone:H,images:urls},headers:{Prefer:"return=minimal"}});
+    if(user&&user.auto){user={name:N2,phone:H};sv("fy3_user",user)}
+    api("/rest/v1/profiles?id=eq."+sess.uid,{method:"PATCH",body:{name:N2,phone:H},headers:{Prefer:"return=minimal"}}).catch(()=>{});
+    pend=[];toast(t.ok);v="home";await load()}catch(e){toast("⚠ "+e.message)}}
+$("lang").onchange=e=>{lang=e.target.value;sv("fy3_lang",lang);render()};
 $("q").oninput=render;
-$("rad").onchange=e=>{rad=+e.target.value;render()};
-$("country").onchange=e=>{country=e.target.value;const c=CO.find(c=>c[0]===country);if(c)setMe({lat:c[4],lng:c[5],label:c[3]});else render()};
+$("rad").onchange=e=>{rad=+e.target.value;load()};
+$("country").onchange=e=>{country=e.target.value;const c=CO.find(c=>c[0]===country);if(c)setMe({lat:c[4],lng:c[5],label:c[3]});else load()};
 $("gps").onclick=gps;
 document.addEventListener("click",e=>{
   const g=s=>e.target.closest(s);let b;
-  if(b=g("[data-v]")){v=b.dataset.v;chat=null;render();scrollTo(0,0)}
+  if(b=g("[data-v]")){v=b.dataset.v;chat=null;render();scrollTo(0,0);if(v==="msgs")loadMsgs();if(v==="saved")loadSaved()}
   else if(b=g("[data-c]")){cat=+b.dataset.c;render()}
   else if(b=g("[data-h]")){const id=+b.dataset.h;saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];sv("fy2_saved",saved);render()}
-  else if(b=g("[data-id]")){const x=items.find(i=>i.id===+b.dataset.id);if(!x)return;
-    $("dlg").innerHTML=`${x.imgs&&x.imgs.length?`<div class="gal">${x.imgs.map(s=>`<img src="${s}" alt="">`).join("")}</div>`:`<div class="pic" style="border-radius:12px">${ICO[x.c]}</div>`}<h3>${esc(x.t)}</h3><div class="pr">${esc(x.p)}</div><p>${esc(x.desc||x.d||"")}</p><div class="mu">📍 ${esc(x.city)}${x.seller?" · "+esc(x.seller):""}</div>${x.ph?`<p class="pr">📞 ${esc(x.ph)}</p>`:""}<button class="btn" data-chat="${x.id}">💬 ${t.msgBtn}</button><button class="btn alt" onclick="dlg.close()">✕</button>`;$("dlg").showModal()}
-  else if(b=g("[data-oauth]"))toast(b.dataset.oauth+": needs a backend (Supabase) – next step");
-  else if(g("#login")){const n=$("uN").value.trim(),p=$("uH").value.trim();if(n&&p){user={name:n,phone:p};sv("fy2_user",user);render()}}
-  else if(b=g("[data-chat]")){chat=+b.dataset.chat;v="msgs";$("dlg").close();render();scrollTo(0,0)}
+  else if(b=g("[data-id]")){const x=cache[+b.dataset.id];if(!x)return;
+    $("dlg").innerHTML=`${x.imgs&&x.imgs.length?`<div class="gal">${x.imgs.map(s=>`<img src="${esc(s)}" alt="">`).join("")}</div>`:`<div class="pic" style="border-radius:12px">${ICO[x.c]}</div>`}<h3>${esc(x.t)}</h3><div class="pr">${esc(x.p)}</div><p>${esc(x.desc||"")}</p><div class="mu">📍 ${esc(x.city)}${x.seller?" · "+esc(x.seller):""}</div>${x.ph?`<p class="pr">📞 ${esc(x.ph)}</p>`:""}<button class="btn" data-chat="${x.id}">💬 ${t.msgBtn}</button><button class="btn alt" onclick="dlg.close()">✕</button>`;$("dlg").showModal()}
+  else if(b=g("[data-oauth]"))toast(b.dataset.oauth+": soon")
+  else if(g("#login"))login()
+  else if(b=g("[data-chat]"))openChat(+b.dataset.chat)
+  else if(b=g("[data-conv]")){const[a,o]=b.dataset.conv.split("|");chat={lid:+a,o};render();loadMsgs()}
   else if(g("[data-back]")){chat=null;render()}
-  else if(g("#cS"))sendMsg();
-  else if(g("#addI"))$("fI").click();
+  else if(g("#cS"))sendMsg()
+  else if(g("#addI"))$("fI").click()
   else if(b=g("[data-rm]")){pend.splice(+b.dataset.rm,1);drawTh()}
-  else if(g("#out")){user=null;sv("fy2_user",null);render()}
-  else if(g("#post")){
-    const T=$("fT").value.trim(),D2=$("fD").value.trim(),L=$("fL").value.trim(),N=$("fN").value.trim(),H=$("fH").value.trim();
-    if(!T||!D2||!L||!N||!H)return toast("* "+t.title+", "+t.desc+", "+t.loc+", "+t.name+", "+t.phone);
-    if(!me){gps();return toast("📍 "+t.detect)}
-    const x={id:Date.now(),t:T,desc:D2,p:$("fP").value.trim()||"—",c:+$("fC").value,city:L,co:near(me)[0][0],lat:me.lat,lng:me.lng,seller:N,ph:H,imgs:pend.slice()};
-    items.unshift(x);pend=[];const okS=sv("fy2_items",items);user=(user&&!user.auto)?user:{name:N,phone:H};sv("fy2_user",user);toast(okS?t.ok:t.ok+" ⚠ storage full");v="home";render()}
+  else if(g("#out")){user=null;sess=null;sv("fy3_user",null);sv("fy3_sess",null);signIn().then(render)}
+  else if(g("#post"))post()
 });
-function prof(x){const k=i=>i.ph||i.seller||i.id,n=items.filter(i=>k(i)===k(x)),nm=x.seller||"Fantaye",ts=n.map(i=>i.id).filter(i=>i>1e12),d=ts.length?new Date(Math.min(...ts)).toLocaleDateString():"",fl=(CO.find(c=>c[0]===x.co)||[0,0,""])[2];
-  return `<div class="pcard"><div class="av">${esc(nm[0].toUpperCase())}</div><div><b>${esc(nm)}</b><div class="mu">📍 ${esc(x.city)} ${fl}</div><div class="mu">📦 ${n.length} ${t.ads}${d?" · "+t.since+" "+d:""}</div>${x.ph?`<div class="pr">📞 ${esc(x.ph)}</div>`:""}</div></div>`}
-function msgsView(){
-  if(chat!=null){const x=items.find(i=>i.id===chat),m=chats[chat]||[];
-    return `<div class="form"><button class="chip" data-back="1">← ${t.back}</button>${x?prof(x):""}<h3>${x?ICO[x.c]+" "+esc(x.t):""}</h3><p class="mu">🔒 ${t.demo}</p><div class="msgs">${m.map(z=>`<div class="bub">${esc(z.text)}</div>`).join("")}</div><div class="snd"><input id="cI" placeholder="${t.typeMsg}"><button class="btn" id="cS" style="width:auto;margin:0;padding:12px 18px">${t.send}</button></div></div>`}
-  const ids=Object.keys(chats).filter(k=>chats[k].length).sort((a,b)=>chats[b][chats[b].length-1].ts-chats[a][chats[a].length-1].ts);
-  return ids.length?`<div class="form">${ids.map(k=>{const x=items.find(i=>i.id==k);return `<div class="item" data-chat="${k}" style="margin-bottom:10px;padding:12px"><b>${x?ICO[x.c]+" "+esc(x.t):"…"}</b><div class="mu">${esc(chats[k][chats[k].length-1].text)}</div></div>`}).join("")}</div>`:empty("💬",t.msgE)}
-function sendMsg(){const i=$("cI"),s=i&&i.value.trim();if(!s)return;(chats[chat]=chats[chat]||[]).push({text:s,ts:Date.now()});sv("fy2_chats",chats);render();const m=document.querySelector(".msgs");if(m)m.scrollTop=m.scrollHeight;$("cI").focus()}
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="cI")sendMsg()});
 function drawTh(){$("phL").textContent="📷 "+pend.length+"/3";$("th").innerHTML=pend.map((s,i)=>`<div class="th"><img src="${s}" alt=""><button data-rm="${i}">✕</button></div>`).join("")+(pend.length<3?`<div class="add" id="addI">＋</div>`:"")}
 const shrink=f=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,640/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.6))};im.onerror=()=>r(null);im.src=fr.result};fr.onerror=()=>r(null);fr.readAsDataURL(f)});
 document.addEventListener("change",async e=>{if(e.target.id!=="fI")return;for(const f of [...e.target.files].slice(0,3-pend.length)){const d=await shrink(f);if(d)pend.push(d)}e.target.value="";drawTh()});
+setInterval(()=>{if(v==="msgs")loadMsgs()},4000);
 render();
-gps();
+(async()=>{try{if(!sess)await signIn()}catch(e){err=e.message}gps();load();loadMsgs()})();
 </script>
 </body>
 </html>
