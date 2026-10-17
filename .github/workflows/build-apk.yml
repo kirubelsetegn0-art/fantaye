@@ -16,6 +16,8 @@ jobs:
           java-version: 17
       - run: npm install
       - run: npx cap add android
+      - name: Generate icons and splash
+        run: npx @capacitor/assets generate --android --iconBackgroundColor '#090911' --splashBackgroundColor '#090911'
       - name: Add location permission
         run: |
           sed -i 's#</manifest>#    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
