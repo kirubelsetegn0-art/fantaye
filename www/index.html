@@ -145,7 +145,7 @@ const empty=(i,s)=>`<div class="empty"><b>${i}</b>${s}</div>`;
 function filtered(){const q=$("q").value.toLowerCase();
   return items.map(wd).filter(x=>(cat<0||x.c===cat)&&(x.t+x.city).toLowerCase().includes(q)&&(!rad||!me||x.dist==null||x.dist<=rad)).sort((a,b)=>(a.dist??1e9)-(b.dist??1e9))}
 function render(){
-  t=Object.fromEntries(K.map((k,i)=>[k,(D[lang]||D.en).split("|")[i]]));Object.assign(t,Object.fromEntries(MK.map((k,i)=>[k,(M[lang]||M.en)[i]])));t.ads=(N[lang]||N.en)[0];t.since=(N[lang]||N.en)[1];
+  t=Object.fromEntries(K.map((k,i)=>[k,(D[lang]||D.en).split("|")[i]]));Object.assign(t,Object.fromEntries(MK.map((k,i)=>[k,(M[lang]||M.en)[i]])));t.ads=(N[lang]||N.en)[0];t.since=(N[lang]||N.en)[1];{const q=P[lang]||P.en;t.reg=q[0];t.login=q[1];t.pw=q[2]}
   document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
   $("lang").value=lang;$("what").textContent=t.what;$("q").placeholder=t.look;$("gps").textContent="📍 "+t.detect;
   $("country").innerHTML=`<option value="">🌍 ${t.world}</option>`+CO.map(c=>`<option value="${c[0]}" ${c[0]===country?"selected":""}>${c[2]} ${c[1]}</option>`).join("");
@@ -159,15 +159,26 @@ function render(){
   else if(v==="saved"){const L=saved.map(i=>cache[i]).filter(Boolean).map(wd);h=L.length?`<div class="grid" style="padding-top:14px">${L.map(card).join("")}</div>`:empty("🗂️",t.savedE)}
   else if(v==="msgs")h=msgsView();
   else if(v==="sell")h=`<div class="form"><label id="phL"></label><div class="thumbs" id="th"></div><input id="fI" type="file" accept="image/*" multiple hidden><label>${t.title}*</label><input id="fT"><label>${t.cat}*</label><select id="fC" style="max-width:100%;width:100%">${ICO.map((_,i)=>`<option value="${i}">${t["c"+i]}</option>`).join("")}</select><label>${t.desc}*</label><textarea id="fD" rows="3"></textarea><label>${t.price}</label><input id="fP" placeholder="ETB / USD / EUR…"><label>${t.loc}*</label><input id="fL" value="${esc(me&&me.label||"")}"><label>${t.name}*</label><input id="fN" value="${esc(user&&user.name||"")}"><label>${t.phone}*</label><input id="fH" inputmode="tel" value="${esc(user&&user.phone||"")}"><button class="btn" id="post">${t.post}</button></div>`;
-  else h=user&&!user.auto?`<div class="sheet"><h3>👤 ${esc(user.name)}</h3><p class="mu">${esc(user.phone)}</p><p class="mu">📦 ${items.filter(i=>sess&&i.uid===sess.uid).length} ${t.ads}</p><button class="btn alt" id="out">✕</button></div>`:`<div class="sheet">${user?`<p class="mu">👤 ${esc(user.name)}</p>`:""}<button class="btn alt" data-oauth="Google">${t.google}</button><button class="btn" style="background:#1877f2" data-oauth="Facebook">${t.fb}</button><div id="lf"><label class="mu">${t.name}</label><input id="uN"><label class="mu">${t.phone}</label><input id="uH" inputmode="tel"><button class="btn" id="login">${t.email}</button></div></div>`;
+  else h=user&&!user.auto?`<div class="sheet"><h3>👤 ${esc(user.name)}</h3><p class="mu">${esc(user.phone)}</p><p class="mu">📦 ${items.filter(i=>sess&&i.uid===sess.uid).length} ${t.ads}</p><button class="btn alt" id="out">✕</button></div>`:`<div class="sheet">${user?`<p class="mu">👤 ${esc(user.name)}</p>`:""}<label class="mu">${t.name}</label><input id="uN"><label class="mu">${t.phone}</label><input id="uH" inputmode="tel" placeholder="09…"><label class="mu">${t.pw}</label><input id="uP" type="password"><button class="btn" id="reg">${t.reg}</button><button class="btn alt" id="login">${t.login}</button></div>`;
   $("app").innerHTML=h;
   if(v==="sell")drawTh();
   if(v==="msgs"&&chat)loadStat(chat.o)}
 function setMe(m){const[c,d]=near(m);me={lat:m.lat,lng:m.lng,label:m.label||null};denied=0;if(m.auto&&d<800)country=c[0];load()}
 function gps(){if(!navigator.geolocation){denied=1;return render()}navigator.geolocation.getCurrentPosition(p=>setMe({lat:p.coords.latitude,lng:p.coords.longitude,auto:true}),()=>{denied=1;if(!me)toast(t.world+" 🌍");render()},{timeout:8000,maximumAge:600000})}
+async function register(){
+  const n=$("uN").value.trim(),p=normPhone($("uH").value),pw=$("uP").value;
+  if(!n||p.length<8||pw.length<6)return toast("* "+t.name+", "+t.phone+", "+t.pw);
+  try{if(!sess)await signIn();
+    await api("/auth/v1/user",{method:"PUT",body:{email:p+"@fantaye.app",password:pw,data:{name:n,phone:p}}});
+    user={name:n,phone:p};sv("fy3_user",user);
+    await api("/rest/v1/profiles?id=eq."+sess.uid,{method:"PATCH",body:{name:n,phone:p},headers:{Prefer:"return=minimal"}});
+    toast(t.ok)}catch(e){toast("⚠ "+e.message)}
+  render()}
 async function login(){
-  const n=$("uN").value.trim(),p=$("uH").value.trim();if(!n||!p)return;
-  try{if(!sess)await signIn();user={name:n,phone:p};sv("fy3_user",user);await api("/rest/v1/profiles?id=eq."+sess.uid,{method:"PATCH",body:{name:n,phone:p},headers:{Prefer:"return=minimal"}})}catch(e){toast("⚠ "+e.message)}
+  const p=normPhone($("uH").value),pw=$("uP").value;
+  if(p.length<8||pw.length<6)return toast("* "+t.phone+", "+t.pw);
+  try{const d=await api("/auth/v1/token?grant_type=password",{method:"POST",body:{email:p+"@fantaye.app",password:pw},auth:false});
+    setSess(d);const m=d.user.user_metadata||{};user={name:m.name||p,phone:p};sv("fy3_user",user);toast(t.ok);await load()}catch(e){toast("⚠ "+e.message)}
   render()}
 async function post(){
   const T=$("fT").value.trim(),D2=$("fD").value.trim(),L=$("fL").value.trim(),N2=$("fN").value.trim(),H=$("fH").value.trim();
@@ -192,7 +203,8 @@ document.addEventListener("click",e=>{
   else if(b=g("[data-h]")){const id=+b.dataset.h;saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];sv("fy2_saved",saved);render()}
   else if(b=g("[data-id]")){const x=cache[+b.dataset.id];if(!x)return;
     $("dlg").innerHTML=`${x.imgs&&x.imgs.length?`<div class="gal">${x.imgs.map(s=>`<img src="${esc(s)}" alt="">`).join("")}</div>`:`<div class="pic" style="border-radius:12px">${ICO[x.c]}</div>`}<h3>${esc(x.t)}</h3><div class="pr">${esc(x.p)}</div><p>${esc(x.desc||"")}</p><div class="mu">📍 ${esc(x.city)}${x.seller?" · "+esc(x.seller):""}</div>${x.ph?`<p class="pr">📞 ${esc(x.ph)}</p>`:""}<button class="btn" data-chat="${x.id}">💬 ${t.msgBtn}</button><button class="btn alt" onclick="dlg.close()">✕</button>`;$("dlg").showModal()}
-  else if(b=g("[data-oauth]"))toast(b.dataset.oauth+": soon")
+  else if(b=g("[data-oauth]"))oauth(b.dataset.oauth)
+  else if(g("#reg"))register()
   else if(g("#login"))login()
   else if(b=g("[data-chat]"))openChat(+b.dataset.chat)
   else if(b=g("[data-conv]")){const[a,o]=b.dataset.conv.split("|");chat={lid:+a,o};render();loadMsgs()}
@@ -207,9 +219,32 @@ document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="cI")s
 function drawTh(){$("phL").textContent="📷 "+pend.length+"/3";$("th").innerHTML=pend.map((s,i)=>`<div class="th"><img src="${s}" alt=""><button data-rm="${i}">✕</button></div>`).join("")+(pend.length<3?`<div class="add" id="addI">＋</div>`:"")}
 const shrink=f=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,640/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.6))};im.onerror=()=>r(null);im.src=fr.result};fr.onerror=()=>r(null);fr.readAsDataURL(f)});
 document.addEventListener("change",async e=>{if(e.target.id!=="fI")return;for(const f of [...e.target.files].slice(0,3-pend.length)){const d=await shrink(f);if(d)pend.push(d)}e.target.value="";drawTh()});
+const P={en:["Create account","Log in","Password (min 6)"],am:["መለያ ክፈት","ግባ","የይለፍ ቃል (ቢያንስ 6)"],ar:["إنشاء حساب","تسجيل الدخول","كلمة المرور (6 على الأقل)"],es:["Crear cuenta","Entrar","Contraseña (mín. 6)"],fr:["Créer un compte","Se connecter","Mot de passe (min. 6)"],zh:["注册","登录","密码（至少6位）"]};
+const normPhone=p=>{let d=String(p).replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(/^0[79]\d{8}$/.test(d))d="251"+d.slice(1);if(/^[79]\d{8}$/.test(d))d="251"+d;return d};
+const b64=s=>JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/")))));
+const BACK=()=>encodeURIComponent(location.origin+location.pathname);
+async function oauth(p){
+  if(p!=="Google")return toast(p+": soon");
+  if(!/github\.io$/.test(location.hostname))return toast("Google: kirubelsetegn0-art.github.io/fantaye");
+  try{
+    if(sess){const r=await api("/auth/v1/user/identities/authorize?provider=google&skip_http_redirect=true&redirect_to="+BACK());if(r&&r.url){location.href=r.url;return}}
+    location.href=SB+"/auth/v1/authorize?provider=google&redirect_to="+BACK()
+  }catch(e){toast("⚠ "+e.message)}}
+async function oauthReturn(){
+  const h=new URLSearchParams(location.hash.slice(1)+"&"+location.search.slice(1));
+  if(!h.get("access_token")&&!h.get("error_code")&&!h.get("error"))return 0;
+  history.replaceState(null,"",location.pathname);
+  if(h.get("error_code")==="identity_already_exists"){sess=null;sv("fy3_sess",null);location.href=SB+"/auth/v1/authorize?provider=google&redirect_to="+BACK();return 1}
+  if(!h.get("access_token")){toast("⚠ "+(h.get("error_description")||h.get("error")));return 0}
+  const at=h.get("access_token"),pl=b64(at.split(".")[1]);
+  sess={at,rt:h.get("refresh_token"),exp:+h.get("expires_at")||pl.exp,uid:pl.sub};sv("fy3_sess",sess);
+  try{const u=await api("/auth/v1/user"),m=u.user_metadata||{};
+    user={name:m.full_name||m.name||u.email||"Google",phone:(user&&user.phone)||"",google:1};sv("fy3_user",user);
+    await api("/rest/v1/profiles?id=eq."+sess.uid,{method:"PATCH",body:{name:user.name},headers:{Prefer:"return=minimal"}})}catch(e){toast("⚠ "+e.message)}
+  v="profile";return 0}
 setInterval(()=>{if(v==="msgs")loadMsgs()},4000);
 render();
-(async()=>{try{if(!sess)await signIn()}catch(e){err=e.message}gps();load();loadMsgs()})();
+(async()=>{let redirected=0;try{redirected=await oauthReturn()}catch(e){}if(redirected)return;try{if(!sess)await signIn()}catch(e){err=e.message}render();gps();load();loadMsgs()})();
 </script>
 </body>
 </html>
